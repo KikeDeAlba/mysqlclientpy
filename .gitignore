@@ -1,3 +1,6 @@
 .venv
 venv.ps1
 .vscode/
+mysqlclientpy.egg-info
+build/
+dist/
