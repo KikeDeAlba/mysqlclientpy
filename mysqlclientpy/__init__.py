@@ -36,30 +36,6 @@ class DB():
             cursor.close()
             conn.close()
 
-    def fetch_all_2(
-        self,
-        table: str,
-        columns: list[str],
-        where: dict
-    ):
-        keys = ", ".join(columns)
-        where_keys = " AND ".join([f"{k} = %s" for k in where.keys()])
-        sql = f"SELECT {keys} FROM {table} WHERE {where_keys}"
-
-        return self.fetch_all(sql, tuple(where.values()))
-
-    def fetch_one_v2(
-        self,
-        table: str,
-        columns: list[str],
-        where: dict
-    ) -> dict:
-        keys = ", ".join(columns)
-        where_keys = " AND ".join([f"{k} = %s" for k in where.keys()])
-        sql = f"SELECT {keys} FROM {table} WHERE {where_keys}"
-
-        return self.fetch_one(sql, tuple(where.values()))
-
     def fetch_one(self, sql: str, params: tuple | None = None) -> dict:
         conn = self.__get_connection__()
         cursor = conn.cursor(dictionary=True)
@@ -71,6 +47,30 @@ class DB():
         finally:
             cursor.close()
             conn.close()
+
+    def select(self, table: str, columns: list, where: dict | None) -> list:
+        where = where or {}
+        where_keys = where.keys()
+        where_values = tuple(where.values())
+        where_sql = " AND ".join([f"{k} = %s" for k in where_keys])
+        sql = f"SELECT {', '.join(columns)} FROM {table}"
+
+        if where_sql:
+            sql += f" WHERE {where_sql}"
+
+        return self.fetch_all(sql, where_values)
+    
+    def select_one(self, table: str, columns: list, where: dict | None) -> dict:
+        where = where or {}
+        where_keys = where.keys()
+        where_values = tuple(where.values())
+        where_sql = " AND ".join([f"{k} = %s" for k in where_keys])
+        sql = f"SELECT {', '.join(columns)} FROM {table}"
+
+        if where_sql:
+            sql += f" WHERE {where_sql}"
+
+        return self.fetch_one(sql, where_values)
 
     def execute(self, sql: str, params: tuple | None = None) -> int:
         conn = self.__get_connection__()
