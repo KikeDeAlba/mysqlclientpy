@@ -48,7 +48,7 @@ class DB():
             cursor.close()
             conn.close()
 
-    def select(self, table: str, columns: list, where: dict | None) -> list:
+    def select(self, table: str, columns: list, where: dict | None = None) -> list:
         where = where or {}
         where_keys = where.keys()
         where_values = tuple(where.values())
@@ -60,7 +60,7 @@ class DB():
 
         return self.fetch_all(sql, where_values)
     
-    def select_one(self, table: str, columns: list, where: dict | None) -> dict:
+    def select_one(self, table: str, columns: list, where: dict | None = None) -> dict:
         where = where or {}
         where_keys = where.keys()
         where_values = tuple(where.values())
